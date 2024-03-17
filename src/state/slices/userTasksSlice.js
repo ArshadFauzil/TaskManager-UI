@@ -18,10 +18,10 @@ const userTasksSlice = createSlice({
             state.userTasks = [...state.userTasks, action.payload];
         },
         taskUpdated: (state, action) => {
-            state.userTasks = [...state.userTasks.map(task => task.id !== action.payload.id), action.payload];
+            state.userTasks = [...state.userTasks.filter(task => task.id !== action.payload.id), action.payload];
         },
         taskDeleted: (state, action) => {
-            state.userTasks = [...state.userTasks.map(task => task.id !== action.payload.id)];
+            state.userTasks = [...state.userTasks.filter(task => task.id !== action.payload.id)];
         }
     }
 });

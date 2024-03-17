@@ -11,3 +11,6 @@ export const MaxTitleLength = 50;
 
 export const MinDescriptionLength = 5;
 export const MaxDescriptionLength = 150;
+
+export const MinCommentLength = 3;
+export const MaxCommentLength = 500;

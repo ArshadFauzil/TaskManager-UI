@@ -2,7 +2,7 @@
 
 * {
   box-sizing: border-box;
-  margin: 10;
+  margin: 7px;
   padding: 10;
 }
 
@@ -18,6 +18,18 @@ body {
   border: 1px solid steelblue;
   padding: 30px;
   border-radius: 5px;
+}
+
+.side-menu {
+  margin-left:20%;
+}
+
+.box {
+  width:80%;
+}
+
+.pointer-element {
+  cursor: pointer;
 }
 
 .header {
@@ -61,6 +73,16 @@ body {
   cursor: pointer;
 }
 
+.search {
+  margin: 25px;
+  padding: 10px 20px;
+}
+
+.search-form {
+  margin: 10px;
+  padding: 10px 20px;
+}
+
 .task.reminder {
   border-left: 5px solid green;
 }
@@ -91,6 +113,14 @@ body {
   font-size: 17px;
 }
 
+.form-button {
+  width: 100%;
+  height: 40px;
+  margin: 5px;
+  padding: 3px 7px;
+  font-size: 17px;
+}
+
 .form-control-check {
   display: flex;
   align-items: center;
@@ -109,4 +139,16 @@ body {
 footer {
   margin-top: 30px;
   text-align: center;
+}
+
+.link-button {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
 }

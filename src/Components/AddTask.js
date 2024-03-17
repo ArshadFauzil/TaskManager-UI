@@ -1,5 +1,6 @@
-import { useState } from "react"
-import { useDispatch } from "react-redux"
+import { useState, useEffect } from "react"
+import { useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import LinearProgress from "@mui/material/LinearProgress";
@@ -15,9 +16,12 @@ import { formatDateToISOString } from "../util/appUtil";
 import Alert from '@mui/material/Alert';
 import { MaxTitleLength, MaxDescriptionLength, MinTitleLength, MinDescriptionLength } from "../constants/appConstants";
 import { MIN_DESCRIPTION_LENGTH_VALIDATION, MIN_TITLE_LENGTH_VALIDATION, TASK_CREATION_ERROR, TASK_GET_ERROR } from "../constants/appErrors";
+import { VIEW_TASK_ROUTE } from "../constants/routes";
 
 
 const AddTask = ({ onAdd }) => {    
+
+  const navigate = useNavigate();
 
   var initialDate = new Date();
   initialDate.setDate(initialDate.getDate() + 1);
@@ -34,62 +38,43 @@ const AddTask = ({ onAdd }) => {
 
   const dispatchToStore = useDispatch();
 
+  useEffect(() => {
+    const disableSubmission = titleError || descriptionError;
+    setDisableSubmit(disableSubmission);
+  }, [titleError, descriptionError, disableSubmit]);
+
+
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setTitle(value);
-    console.log('title length ', value.length);
-    console.log('MinTitleLength ', MinTitleLength);
-    const fieldError = value.length < MinTitleLength;
-    setTitleError(fieldError);
-    const disableSubmission = titleError || descriptionError;
-    setDisableSubmit(disableSubmission);
-    console.log('title error ', titleError);
-    console.log('desc error ', descriptionError);
-    console.log('disable bttn', disableSubmission);
+    setTitleError(value.length < MinTitleLength);
   }
 
   const handleDescriptionChange = (e) => {
     const value = e.target.value;
     setDescription(value);
-    console.log('desc length ', value.length);
-    console.log('MinDescriptionLength error ', MinDescriptionLength);
-    const fieldError = value.length < MinDescriptionLength;
-    setDescriptionError(fieldError);
-    const disableSubmission = titleError || descriptionError;
-    setDisableSubmit(disableSubmission);
-    console.log('title error ', titleError);
-    console.log('desc error ', descriptionError);
-    console.log('disable bttn', disableSubmission);
+    setDescriptionError(value.length < MinDescriptionLength);
   }
 
   const onSubmit = (e) => {
     e.preventDefault()
 
-    const isoDateString = formatDateToISOString(dueDate)
+    const isoDateString = formatDateToISOString(dueDate);
 
     createUserTask({ title, description, dueDate: isoDateString })
         .then(creationResponse => {
-            console.log(creationResponse.data)
             getUserTaskById(creationResponse.data)
                 .then(getResponse => {
-                    console.log(getResponse.data)
                     dispatchToStore(newTaskCreated(getResponse.data))
+                    navigate(VIEW_TASK_ROUTE, { state: getResponse.data })
                 })
                 .catch(function (error) {
                     setGetApiErrorOccurred(true);
-                    console.log(error);
                   });
         })
         .catch(function (error) {
             setCreateApiErrorOccurred(true);
-            console.log(error);
           });
-
-    console.log(title, description, dueDate)
-
-    setTitle('')
-    setDescription('')
-    setDueDate('')
   }
 
   return (
@@ -111,7 +96,7 @@ const AddTask = ({ onAdd }) => {
             placeholder="Add Title"
             error={titleError}
             helperText={titleError ? MIN_TITLE_LENGTH_VALIDATION : null}
-            inputProps={{ maxLength: {MaxTitleLength} }}
+            inputProps={{ maxLength: MaxTitleLength }}
             value={title} 
             onChange={handleTitleChange}
         />
@@ -121,19 +106,19 @@ const AddTask = ({ onAdd }) => {
         <LinearProgress
             className="charProgress"
             variant="determinate"
-            value={title.length}
+            value={title.length / MaxTitleLength * 100}
         />
         <TextField 
             id="outlined-textarea"
             label="Description"
             rows={5}
             placeholder="Add Description"
-            className="form-control"ß
+            className="form-control"
             multiline 
             error={descriptionError}
             helperText={descriptionError ? MIN_DESCRIPTION_LENGTH_VALIDATION : null}
             value={description} 
-            inputProps={{ maxLength: {MaxDescriptionLength} }}
+            inputProps={{ maxLength: MaxDescriptionLength }}
             onChange={handleDescriptionChange}
             />
             <span className="charLeft">
@@ -142,7 +127,7 @@ const AddTask = ({ onAdd }) => {
             <LinearProgress
                 className="charProgress"
                 variant="determinate"
-                value={description.length}
+                value={description.length / MaxDescriptionLength * 100}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker 
