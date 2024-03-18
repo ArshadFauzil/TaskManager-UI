@@ -11,13 +11,13 @@ import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import dayjs from 'dayjs';
 import { newTaskCreated } from "../state/slices/userTasksSlice";
-import { createUserTask, getUserTaskById } from "../services/userTasksService";
+import { createUserTask, createUserTaskFile, getUserTaskById } from "../services/userTasksService";
 import { formatDateToISOString } from "../util/appUtil";
 import Alert from '@mui/material/Alert';
 import { MaxTitleLength, MaxDescriptionLength, MinTitleLength, MinDescriptionLength } from "../constants/appConstants";
-import { MIN_DESCRIPTION_LENGTH_VALIDATION, MIN_TITLE_LENGTH_VALIDATION, TASK_CREATION_ERROR, TASK_GET_ERROR } from "../constants/appErrors";
+import { FILE_CREATE_ERROR, MIN_DESCRIPTION_LENGTH_VALIDATION, MIN_TITLE_LENGTH_VALIDATION, TASK_CREATION_ERROR, TASK_GET_ERROR } from "../constants/appErrors";
 import { VIEW_TASK_ROUTE } from "../constants/routes";
-
+import { Input } from '@mui/material';
 
 const AddTask = ({ onAdd }) => {    
 
@@ -28,6 +28,7 @@ const AddTask = ({ onAdd }) => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [dueDate, setDueDate] = useState(initialDate)
+  const [file, setFile] = useState(null);
 
   const [titleError, setTitleError] = useState(true)
   const [descriptionError, setDescriptionError] = useState(true)
@@ -35,6 +36,7 @@ const AddTask = ({ onAdd }) => {
 
   const [createApiErrorOccurred, setCreateApiErrorOccurred] = useState(false)
   const [getApiErrorOccurred, setGetApiErrorOccurred] = useState(false)
+  const [createFileApiErrorOccurred, setCreateFileApiErrorOccurred] = useState(false)
 
   const dispatchToStore = useDispatch();
 
@@ -65,14 +67,31 @@ const AddTask = ({ onAdd }) => {
         .then(creationResponse => {
             getUserTaskById(creationResponse.data)
                 .then(getResponse => {
-                    dispatchToStore(newTaskCreated(getResponse.data))
-                    navigate(VIEW_TASK_ROUTE, { state: getResponse.data })
+                    const newTask = getResponse.data;
+                    dispatchToStore(newTaskCreated(newTask));
+
+                    if (file) {
+                        console.log(file)
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('taskId', newTask.id);
+                        formData.append('fileType', file.type);
+                        createUserTaskFile(formData)
+                            .then(fileCreationResponse => {
+                                navigate(VIEW_TASK_ROUTE, { state: newTask });
+                            })
+                            .catch(error => {
+                                setCreateFileApiErrorOccurred(true);
+                            });
+                    } else {
+                        navigate(VIEW_TASK_ROUTE, { state: newTask });
+                    }
                 })
-                .catch(function (error) {
+                .catch(error => {
                     setGetApiErrorOccurred(true);
                   });
         })
-        .catch(function (error) {
+        .catch(error => {
             setCreateApiErrorOccurred(true);
           });
   }
@@ -139,6 +158,11 @@ const AddTask = ({ onAdd }) => {
                     disablePast
                 />
             </LocalizationProvider>
+            <Input 
+                type="file" 
+                label="file"
+                onChange={(e) => setFile(e.target.files[0])}
+            />
             <Button 
                 type="submit" 
                 variant="contained" 
@@ -150,6 +174,7 @@ const AddTask = ({ onAdd }) => {
 
             { createApiErrorOccurred ? <Alert severity="error">{TASK_CREATION_ERROR}</Alert> : null }
             { getApiErrorOccurred ? <Alert severity="error">{TASK_GET_ERROR}</Alert> : null }
+            { createFileApiErrorOccurred ? <Alert severity="error">{FILE_CREATE_ERROR}</Alert> : null }
         </Box>
   )
 }

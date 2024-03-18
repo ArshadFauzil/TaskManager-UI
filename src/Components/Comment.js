@@ -62,7 +62,7 @@ const Comment = ({ comment, onCommentUpdate, onCommentDelete }) => {
 
       const onSubmit = (e) => {
         e.preventDefault();
-
+        
         updateUserTaskComment(comment.id, { comment: editedCommentValue })
             .then(updateResponse => {
                 const editedComment = {...comment, comment: editedCommentValue };

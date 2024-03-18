@@ -16,19 +16,16 @@ const App = () => {
   return (
     <Router>
       <CssBaseline />
-      <Container className="container">
-      <Box className="side-menu">
-        <SideMenu />
-      </Box>
-      <Box>
-          <Routes>
-            <Route path={ROOT_ROUTE} element={<Tasks />} />
-            <Route path={CREATE_TASK_ROUTE} element={<AddTask />} />
-            <Route path={VIEW_TASK_ROUTE} element={<TaskView />} />
-            <Route path={UPDATE_TASK_ROUTE} element={<EditTask />} />
-            {/* add other routes like Update and task view */}
-          </Routes>
+      <Container className="container window">
+        <Box className="side-menu">
+          <SideMenu />
         </Box>
+        <Routes>
+              <Route path={ROOT_ROUTE} element={<Tasks />} />
+              <Route path={CREATE_TASK_ROUTE} element={<AddTask />} />
+              <Route path={VIEW_TASK_ROUTE} element={<TaskView />} />
+              <Route path={UPDATE_TASK_ROUTE} element={<EditTask />} />
+        </Routes>
       </Container>  
     </Router>
   );

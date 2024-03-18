@@ -28,7 +28,8 @@ const NewComment = ({ taskId, onNewCommentAddition }) => {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        createUserTaskComment({ taskId, comment: newComment })
+        if (Object.keys(newComment).length > 0) {
+            createUserTaskComment({ taskId, comment: newComment })
             .then(createResponse => {
                 const newCommentId = createResponse.data;
                 getCommentById(newCommentId)
@@ -43,6 +44,8 @@ const NewComment = ({ taskId, onNewCommentAddition }) => {
             .catch(error => {
                 setCreateCommentApiErrorOccurred(true);
             });
+        }
+        
       }
 
     return (

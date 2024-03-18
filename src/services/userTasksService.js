@@ -1,4 +1,4 @@
-import { getAllTasks, createTask, getTask, updateTask, deleteTask, getCommentForTasks, updateTaskComment, createTaskComment, getComment, deleteTaskComment } from "../api/taskAPI";
+import { getAllTasks, createTask, getTask, updateTask, deleteTask, getCommentForTasks, updateTaskComment, createTaskComment, getComment, deleteTaskComment, createTaskFile } from "../api/taskAPI";
 import UserTaskStatuses from "../constants/userTaskStatuses";
 import { formatDateToISOString } from "../util/appUtil";
 import moment from "moment";
@@ -35,6 +35,10 @@ export const getCommentById = async (commentId) => {
     return await getComment(commentId);
 }
 
+export const createUserTaskFile = async (payload) => {
+    return await createTaskFile(payload);
+}
+
 export const updateUserTaskComment = async (id, payload) => {
     return await updateTaskComment(id, payload);
 }
@@ -43,7 +47,7 @@ export const deleteUserTaskComment = async(commentId) => {
     return await deleteTaskComment(commentId);
 }
 
-export const checkIfUserTaskStatusIsCompleted = async (status) => {
+export const checkIfUserTaskStatusIsCompleted = (status) => {
     return status === UserTaskStatuses.COMPLETE;
 }
 

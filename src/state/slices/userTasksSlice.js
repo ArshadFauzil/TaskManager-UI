@@ -4,7 +4,8 @@ import { ONE } from "../../constants/appConstants";
 
 const allTasksResponse = await retrieveAllTasks(ONE);
 const initialState = {
-    userTasks: allTasksResponse.data
+    userTasks: allTasksResponse.data,
+    pageNumber: ONE
 }
 
 const userTasksSlice = createSlice({
@@ -22,9 +23,12 @@ const userTasksSlice = createSlice({
         },
         taskDeleted: (state, action) => {
             state.userTasks = [...state.userTasks.filter(task => task.id !== action.payload.id)];
+        },
+        scrolledToNextPage: (state, action) => {
+            state.pageNumber = action.payload;
         }
     }
 });
 
-export const { tasksFetchedByPage, newTaskCreated, taskUpdated, taskDeleted } = userTasksSlice.actions;
+export const { tasksFetchedByPage, newTaskCreated, taskUpdated, taskDeleted, scrolledToNextPage } = userTasksSlice.actions;
 export default userTasksSlice.reducer;

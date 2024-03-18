@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button'
+import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Alert from '@mui/material/Alert';
 import { useNavigate } from 'react-router-dom';
@@ -64,7 +64,7 @@ const Task = ({ task }) => {
       });
   };
 
-  const handleSetCompleteConfirm = () => {
+  const handleSetStatusConfirm = () => {
     setOpenSetStatusConfirmDialog(false);
     const payload = { ...task, status: ( checkIfUserTaskStatusIsCompleted(task.status) ? 
       UserTaskStatuses.INCOMPLETE : UserTaskStatuses.COMPLETE) };
@@ -95,7 +95,7 @@ const Task = ({ task }) => {
         <Divider />
         <Box sx={{ p: 2 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography color={`${task.status === UserTaskStatuses.COMPLETE ? 'green' : 'red' }`} gutterBottom variant="h5" component="div">
+            <Typography color={`${checkIfUserTaskStatusIsCompleted(task.status) ? 'green' : 'red' }`} gutterBottom variant="h5" component="div">
               {task.status}
             </Typography>
             <Typography gutterBottom variant="h6" component="div">
@@ -128,7 +128,7 @@ const Task = ({ task }) => {
       <ConfirmationDialogBox 
         open={openSetStatusConfirmDialog} 
         handleClose={handleSetCompleteConfirmDialogClose}
-        handleConfirm={handleSetCompleteConfirm}
+        handleConfirm={handleSetStatusConfirm}
         dialogBody={!taskStatusIsComplete ? STATUS_COMPLETE_UPDATE_CONFIRM_MESSAGE : STATUS_INCOMPLETE_UPDATE_CONFIRM_MESSAGE}
       />
 
