@@ -76,21 +76,6 @@ export const filterUserTasks = (searchQuery, dateQuery, userTasks) => {
       });
   }
 
-  export const sortUserTasksByDueDate = (tasks) => {
- /*    [].slice.call(tasks).sort(function(a,b){
-      // Turn your strings into dates, and then subtract them
-      // to get a value that is either negative, positive, or zero.
-      return new Date(b.dueDate) - new Date(a.dueDate);
-    }); */
-
-    function compare( a, b ) {
-        if ( moment(a.dueDate).isBefore(b.dueDate) ){
-          return -1;
-        }
-        if ( moment(a.dueDate).isAfter(b.dueDate) ){
-          return 1;
-        }
-        return 0;
-    }
-    [].slice.call(tasks).sort( compare );
+  export const sortUserTasksByLatestDueDates = (tasks) => {
+    return [].slice.call(tasks).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)).reverse();
   }

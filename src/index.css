@@ -11,7 +11,7 @@ body {
 }
 
 .container {
-  max-width: 1000px;
+  maxWidth: lg;
   margin: 10px auto;
   border: 1px solid steelblue;
   padding: 30px;

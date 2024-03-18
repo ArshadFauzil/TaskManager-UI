@@ -25,7 +25,7 @@ const userTasksSlice = createSlice({
             state.userTasks = [...state.userTasks.filter(task => task.id !== action.payload.id)];
         },
         scrolledToNextPage: (state, action) => {
-            state.pageNumber = action.payload;
+            state.pageNumber += 1;
         }
     }
 });
