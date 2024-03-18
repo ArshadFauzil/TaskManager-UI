@@ -5,7 +5,8 @@ import { ONE } from "../../constants/appConstants";
 const allTasksResponse = await retrieveAllTasks(ONE);
 const initialState = {
     userTasks: allTasksResponse.data,
-    pageNumber: ONE
+    pageNumber: ONE,
+    fulfilled: false,
 }
 
 const userTasksSlice = createSlice({

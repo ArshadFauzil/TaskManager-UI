@@ -8,23 +8,19 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import { TASKS_GET_ERROR } from "../constants/appErrors";
-import { createSelector } from 'reselect';
 import { Button } from "@mui/material";
 
 const Tasks = () => {
 
-  const userTasks = useSelector(state => state.tasks.userTasks);
-  //const persistedPageNumber = useSelector(state => state.tasks.pageNumber);
-
-  const persistedPageNumber = (state) => state.tasks.pageNumber;
+  const { userTasks, pageNumber } = useSelector((state) => state.tasks);
 
   const dispatchToStore = useDispatch();
 
+  const userTasksPagesCount = userTasks[0].userTasksPagesCount;
+
   const [taskListReversed, setTaskListReversed] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-
-  const [samplePageNum, setSamplePageNum] = useState(1);
+  const [taskListLoading, setTaskListLoading] = useState(false);
 
   const [getApiErrorOccurred, setGetApiErrorOccurred] = useState(false)
 
@@ -33,26 +29,28 @@ const Tasks = () => {
   const filteredUserTasks = filterUserTasks(searchQuery, dateQuery, userTasks);
   const sortedUserTasks = sortUserTasksByLatestDueDates(filteredUserTasks);
 
-  const persistedPageNumberSelector = createSelector(
-    [persistedPageNumber],
-    (updatedPageNumber) => updatedPageNumber
-  );
-
-  const handleOnScroll = (e) => {
-    const target = e.target;
-
-    if (target.scrollHeight - target.scrollTop === target.clientHeight)
-    {
-      dispatchToStore(scrolledToNextPage());
-      setLoading(true);
-          retrieveAllTasks(persistedPageNumber)
+  useEffect(() => {
+    if (taskListLoading) {
+      retrieveAllTasks(pageNumber)
           .then(response => {
-            dispatchToStore(tasksFetchedByPage(response.data));
-            setLoading(false);
+            if (response.data.length > 0) {
+              dispatchToStore(tasksFetchedByPage(response.data));
+            }
+            
+            setTaskListLoading(false);
           })
             .catch(error => {
             setGetApiErrorOccurred(true);
           });
+    }
+  }, [pageNumber, taskListLoading, dispatchToStore]);
+
+  const handleOnScroll = (e) => {
+    const target = e.target;
+
+    if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+      dispatchToStore(scrolledToNextPage());
+      setTaskListLoading(true);
     }
   }
 
@@ -85,7 +83,7 @@ const Tasks = () => {
         
       </div>
 
-      {loading ? 
+      {taskListLoading ? 
         <Box sx={{ display: 'flex' }}>
             <CircularProgress />
         </Box>
