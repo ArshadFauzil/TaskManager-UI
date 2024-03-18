@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useDispatch } from "react-redux";
-import { formatDateString } from '../util/appUtil'
-import { appDateFormat } from '../constants/appConstants'
-import UserTaskStatuses from '../constants/userTaskStatuses'
+import { formatDateString } from '../util/appUtil';
+import { appDateFormat } from '../constants/appConstants';
+import UserTaskStatuses from '../constants/userTaskStatuses';
 import Card from '@mui/material/Card';
+import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
@@ -72,7 +73,6 @@ const Task = ({ task }) => {
         .then(updateResponse => {
             dispatchToStore(taskUpdated(payload));
             setTaskStatusIsComplete(!taskStatusIsComplete);
-            //navigate(ROOT_ROUTE);
         })
         .catch(function (error) {
             setUpdateApiErrorOccurred(true);
@@ -81,44 +81,47 @@ const Task = ({ task }) => {
 
   return (
     <div>
-      <Card variant="outlined" className="task" onDoubleClick={handleDoubleClick}>
-        <Box sx={{ p: 2 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography gutterBottom variant="h5" component="div">
-              {task.title}
-            </Typography>
-            <Typography gutterBottom variant="h6" component="div">
-              {formatDateString(task.dueDate, appDateFormat)}
-            </Typography>
-          </Stack>
-        </Box>
-        <Divider />
-        <Box sx={{ p: 2 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography color={`${checkIfUserTaskStatusIsCompleted(task.status) ? 'green' : 'red' }`} gutterBottom variant="h5" component="div">
-              {task.status}
-            </Typography>
-            <Typography gutterBottom variant="h6" component="div">
-              <Button 
-                variant="contained" 
-                onClick={handleSetCompleteConfirmDialogOpen}
-              >
-                {!taskStatusIsComplete ? 'Set Task To Complete' : 'Set Task To Incomplete'}
-              </Button>
-            </Typography>
-            <Typography gutterBottom variant="h6" component="div">
-              <Button 
-                variant="contained" 
-                color="error" 
-                startIcon={<DeleteIcon />}
-                onClick={handleDeleteConfirmDialogOpen}
-              > 
-                Delete Task
-              </Button>
-            </Typography>
-          </Stack>
-        </Box>
-      </Card>
+      <Tooltip title="Double Click to View Task in Detail">
+        <Card variant="outlined" className="task" onDoubleClick={handleDoubleClick}>
+          <Box sx={{ p: 2 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography gutterBottom variant="h5" component="div">
+                {task.title}
+              </Typography>
+              <Typography gutterBottom variant="h6" component="div">
+                {formatDateString(task.dueDate, appDateFormat)}
+              </Typography>
+            </Stack>
+          </Box>
+          <Divider />
+          <Box sx={{ p: 2 }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography color={`${checkIfUserTaskStatusIsCompleted(task.status) ? 'green' : 'red' }`} gutterBottom variant="h5" component="div">
+                {task.status}
+              </Typography>
+              <Typography gutterBottom variant="h6" component="div">
+                <Button 
+                  variant="contained" 
+                  onClick={handleSetCompleteConfirmDialogOpen}
+                >
+                  {!taskStatusIsComplete ? 'Set Task To Complete' : 'Set Task To Incomplete'}
+                </Button>
+              </Typography>
+              <Typography gutterBottom variant="h6" component="div">
+                <Button 
+                  variant="contained" 
+                  color="error" 
+                  startIcon={<DeleteIcon />}
+                  onClick={handleDeleteConfirmDialogOpen}
+                > 
+                  Delete Task
+                </Button>
+              </Typography>
+            </Stack>
+          </Box>
+        </Card>
+      </Tooltip>
+      
       <ConfirmationDialogBox 
         open={openDeleteConfirmDialog} 
         handleClose={handleDeleteConfirmDialogClose}

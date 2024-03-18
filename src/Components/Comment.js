@@ -1,12 +1,14 @@
 import Paper from '@mui/material/Paper';
+import Grid from "@mui/material//Grid";
 import Button from '@mui/material/Button';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
-import { COMMENT_DELETE_ERROR, COMMENT_UPDATE_ERROR, MIN_COMMENT_LENGTH_VALIDATION } from '../constants/appErrors';
+import { COMMENTS_GET_ERROR, COMMENT_DELETE_ERROR, COMMENT_UPDATE_ERROR, MIN_COMMENT_LENGTH_VALIDATION } from '../constants/appErrors';
 import { MinCommentLength, MaxCommentLength } from "../constants/appConstants";
-import { deleteUserTaskComment, updateUserTaskComment } from '../services/userTasksService';
+import { deleteUserTaskComment, getCommentById, updateUserTaskComment } from '../services/userTasksService';
 import Alert from '@mui/material/Alert';
 import { formatDateString } from '../util/appUtil';
 import { appDateFormat } from '../constants/appConstants';
@@ -25,6 +27,7 @@ const Comment = ({ comment, onCommentUpdate, onCommentDelete }) => {
 
     const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
     const [deletApiErrorOccurred, setDeletApiErrorOccurred] = useState(false);
+    const [getCommentApiErrorOccurred, setGetCommentApiErrorOccurred] = useState(false);
 
     useEffect(() => {
         setDisableSubmit(commentError);
@@ -65,9 +68,15 @@ const Comment = ({ comment, onCommentUpdate, onCommentDelete }) => {
         
         updateUserTaskComment(comment.id, { comment: editedCommentValue })
             .then(updateResponse => {
-                const editedComment = {...comment, comment: editedCommentValue };
-                onCommentUpdate(editedComment);
-                setEditModeOn(false);
+                getCommentById(comment.id)
+                  .then(getResponse => {
+                    onCommentUpdate(getResponse.data);
+                    setEditModeOn(false);
+                  })
+                  .catch(error => {
+                    setGetCommentApiErrorOccurred(true);
+                  });
+                
             })
             .catch(error => {
                 setUpdateCommentApiErrorOccurred(true);
@@ -89,33 +98,43 @@ const Comment = ({ comment, onCommentUpdate, onCommentDelete }) => {
         <div>
             {editModeOn ? 
             <form onSubmit={onSubmit}>
-                <TextField 
-                    id="outlined-textarea"
-                    label="Edit Comment"
-                    rows={5}
-                    placeholder="Add Comment"
-                    className="form-control"
-                    multiline 
-                    error={commentError}
-                    helperText={commentError ? MIN_COMMENT_LENGTH_VALIDATION : null}
-                    value={editedCommentValue} 
-                    inputProps={{ maxLength: MaxCommentLength }}
-                    onChange={handleCommentChange}
-                />
-                <Button 
-                    type="submit" 
-                    variant="contained" 
-                    disabled={disableSubmit}
-                >
-                    Update Comment
-                </Button>
-                <Button 
-                    type="submit" 
-                    variant="contained"
-                    onClick={cancelEdit}
-                >
-                    Cancel
-                </Button>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField 
+                      id="outlined-textarea"
+                      label="Edit Comment"
+                      rows={5}
+                      placeholder="Add Comment"
+                      className="form-control"
+                      multiline 
+                      error={commentError}
+                      helperText={commentError ? MIN_COMMENT_LENGTH_VALIDATION : null}
+                      value={editedCommentValue} 
+                      inputProps={{ maxLength: MaxCommentLength }}
+                      onChange={handleCommentChange}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button 
+                      type="submit" 
+                      variant="contained" 
+                      disabled={disableSubmit}
+                    >
+                        Update Comment
+                    </Button>
+                  </Grid>
+                  <Grid item xs={10}>
+                    <Button 
+                      type="submit" 
+                      color="error"
+                      variant="outlined"
+                      endIcon={<CancelIcon />}
+                      onClick={cancelEdit}
+                    >
+                        Cancel
+                    </Button>
+                  </Grid>
+              </Grid>
             </form> : 
             <>
                 <Item>
@@ -138,6 +157,7 @@ const Comment = ({ comment, onCommentUpdate, onCommentDelete }) => {
             />
             { updateCommentApiErrorOccurred ? <Alert severity="error">{COMMENT_UPDATE_ERROR}</Alert> : null }
             { deletApiErrorOccurred ? <Alert severity="error">{ COMMENT_DELETE_ERROR }</Alert> : null }
+            { getCommentApiErrorOccurred ? <Alert severity="error">{COMMENTS_GET_ERROR}</Alert> : null }
         </div>
     );
 

@@ -1,5 +1,5 @@
-import { useSelector, useDispatch } from "react-redux"
-import Task from "./Task"
+import { useSelector, useDispatch } from "react-redux";
+import Task from "./Task";
 import { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import { tasksFetchedByPage, scrolledToNextPage } from "../state/slices/userTasksSlice";
@@ -16,13 +16,13 @@ const Tasks = () => {
 
   const dispatchToStore = useDispatch();
 
-  const userTasksPagesCount = userTasks[0].userTasksPagesCount;
+  const numberOfUserTasksPagesOnAppLoad = userTasks[0].numberOfPagesOfUserTasks;
 
-  const [taskListReversed, setTaskListReversed] = useState(false);
 
   const [taskListLoading, setTaskListLoading] = useState(false);
+  const [taskListReversed, setTaskListReversed] = useState(false);
 
-  const [getApiErrorOccurred, setGetApiErrorOccurred] = useState(false)
+  const [getApiErrorOccurred, setGetApiErrorOccurred] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [dateQuery, setDateQuery] = useState(null);
@@ -30,20 +30,21 @@ const Tasks = () => {
   const sortedUserTasks = sortUserTasksByLatestDueDates(filteredUserTasks);
 
   useEffect(() => {
-    if (taskListLoading) {
+    if (taskListLoading && pageNumber < numberOfUserTasksPagesOnAppLoad) {
       retrieveAllTasks(pageNumber)
           .then(response => {
             if (response.data.length > 0) {
               dispatchToStore(tasksFetchedByPage(response.data));
             }
-            
             setTaskListLoading(false);
           })
             .catch(error => {
             setGetApiErrorOccurred(true);
           });
+    } else {
+      setTaskListLoading(false);
     }
-  }, [pageNumber, taskListLoading, dispatchToStore]);
+  }, [taskListLoading, pageNumber, numberOfUserTasksPagesOnAppLoad, dispatchToStore]);
 
   const handleOnScroll = (e) => {
     const target = e.target;

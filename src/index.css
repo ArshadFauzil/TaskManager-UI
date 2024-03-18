@@ -10,17 +10,41 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+span + span {
+  margin-left: 10px;
+  margin-top: 10px;;
+}
+
 .container {
-  maxWidth: lg;
   margin: 10px auto;
   border: 1px solid steelblue;
   padding: 30px;
   border-radius: 5px;
+  float: right;
 }
 
 .container.window {
-  width:100%;
+  width:calc(100% - 240px);
   overflow-y: scroll;
+}
+
+.main-content {
+  position: relative;
+}
+
+.title {
+  height: 70px;
+  position : relative;
+  margin: auto;
+  padding-top : 10px; 
+  margin-top : 20px; 
+  margin-left: 100px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.drawer {
+  float: left;
 }
 
 .task-list {
@@ -103,7 +127,7 @@ body {
 }
 
 .add-form {
-  margin-bottom: 40px;
+  flex-direction: column;
 }
 
 .form-control {
@@ -120,6 +144,8 @@ body {
   margin: 5px;
   padding: 3px 7px;
   font-size: 17px;
+  display: block;
+  margin-right: 20px;
 }
 
 .form-button {

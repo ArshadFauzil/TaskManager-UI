@@ -49,11 +49,3 @@ export async function deleteTaskComment (commentId) {
 export async function createTaskFile (payload) {
     return await API.post('tasks/files', payload);
 }
-
-/* export async function getFileForTasks (taskId) {
-    return await API.get(`tasks/${taskId}/files`);
-}
-
-export async function deleteTaskFile (fileId) {
-    return await API.delete(`tasks/files/${fileId}`);
-} */

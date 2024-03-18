@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MinCommentLength, MaxCommentLength } from "../constants/appConstants";
+import Grid from "@mui/material//Grid";
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -50,26 +51,33 @@ const NewComment = ({ taskId, onNewCommentAddition }) => {
 
     return (
         <form onSubmit={onSubmit}>
-            <TextField 
-                id="outlined-textarea"
-                label="New Comment"
-                rows={5}
-                placeholder="Add Comment"
-                className="form-control"
-                multiline 
-                error={commentError}
-                helperText={commentError ? MIN_COMMENT_LENGTH_VALIDATION : null}
-                value={newComment} 
-                inputProps={{ maxLength: MaxCommentLength }}
-                onChange={handleNewCommentChange}
-            />
-            <Button 
-                type="submit" 
-                variant="contained" 
-                disabled={disableSubmit}
-            >
-                Add Comment
-            </Button>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField 
+                        id="outlined-textarea"
+                        label="New Comment"
+                        rows={5}
+                        placeholder="Add Comment"
+                        className="form-control"
+                        multiline 
+                        error={commentError}
+                        helperText={commentError ? MIN_COMMENT_LENGTH_VALIDATION : null}
+                        value={newComment} 
+                        inputProps={{ maxLength: MaxCommentLength }}
+                        onChange={handleNewCommentChange}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button 
+                        type="submit" 
+                        variant="contained" 
+                        disabled={disableSubmit}
+                    >
+                        Add Comment
+                    </Button>
+                </Grid>
+            </Grid>
+            
             { createCommentApiErrorOccurred ? <Alert severity="error">{COMMENT_CREATE_ERROR}</Alert> : null }
             { getCommentApiErrorOccurred ? <Alert severity="error">{COMMENT_GET_ERROR}</Alert> : null }
         </form>

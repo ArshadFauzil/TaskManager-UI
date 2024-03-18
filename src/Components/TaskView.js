@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Grid from "@mui/material//Grid";
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -11,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import { useLocation } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { UPDATE_TASK_ROUTE } from '../constants/routes';
-import { retrieveAllCommentsForTasks } from '../services/userTasksService';
+import { retrieveAllCommentsForTasks, sortCommentsByLatestDates } from '../services/userTasksService';
 import Alert from '@mui/material/Alert';
 import { COMMENTS_GET_ERROR } from '../constants/appErrors';
 import Comment from './Comment';
@@ -26,6 +27,7 @@ const TaskView = () => {
 
     const [comments, setComments] = useState([]);
     const [commentGetApiErrorOccurred, setCommentGetApiErrorOccurred] = useState(false);
+    const sortedComments = sortCommentsByLatestDates(comments);
 
     useEffect(() => {
         if (!comments.length) {
@@ -63,44 +65,59 @@ const TaskView = () => {
       
       return (
         <Box sx={{ width: '100%' }}>
-            <Stack spacing={2}>
-                <Item>
-                    <Typography gutterBottom variant="h5" component="div">
-                        {task.title}
-                    </Typography>
-                </Item>
-                <Item>
-                    {task.description}
-                </Item>
-                <Item>
-                    {formatDateString(task.dueDate, appDateFormat)}
-                </Item>
-                <Item>
-                <Typography color={`${task.status === UserTaskStatuses.COMPLETE ? 'green' : 'red' }`} gutterBottom variant="h6" component="div">
-                    {task.status}
-                </Typography>
-                </Item>
-            </Stack>
-            <Button 
-            variant="contained"
-            onClick={handleOnEditClick}>
-                Edit Task
-            </Button>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Stack spacing={2}>
+                        <Item>
+                            <Typography gutterBottom variant="h5" component="div">
+                                {task.title}
+                            </Typography>
+                        </Item>
+                        <Item>
+                            {task.description}
+                        </Item>
+                        <Item>
+                            {formatDateString(task.dueDate, appDateFormat)}
+                        </Item>
+                        <Item>
+                        <Typography color={`${task.status === UserTaskStatuses.COMPLETE ? 'green' : 'red' }`} gutterBottom variant="h6" component="div">
+                            {task.status}
+                        </Typography>
+                        </Item>
+                    </Stack>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button 
+                        variant="contained"
+                        onClick={handleOnEditClick}
+                    >
+                        Edit Task
+                    </Button>
+                </Grid>
+                <Grid item xs={4}>
+                    <NewComment taskId={task.id} onNewCommentAddition={onNewCommentAddition} />
+                </Grid>
+                <Grid item xs={12}>
+                    <Stack spacing={2}>
+                        {sortedComments.length > 0 ? 
+                        sortedComments.map((comment) => (
+                            <Comment 
+                                key={comment.id} 
+                                comment={comment} 
+                                onCommentUpdate={onCommentUpdate} 
+                                onCommentDelete={onCommentDelete}
+                            />
+                        )) : 
+                        'No Comments'}
+                    </Stack>
+                </Grid>
+            </Grid>
+            
+            
 
-            <NewComment taskId={task.id} onNewCommentAddition={onNewCommentAddition} />
+            
 
-            <Stack spacing={2}>
-                {comments.length > 0 ? 
-                comments.map((comment) => (
-                    <Comment 
-                        key={comment.id} 
-                        comment={comment} 
-                        onCommentUpdate={onCommentUpdate} 
-                        onCommentDelete={onCommentDelete}
-                    />
-                )) : 
-                'No Comments'}
-            </Stack>
+            
             { commentGetApiErrorOccurred ? <Alert severity="error">{COMMENTS_GET_ERROR}</Alert> : null }
         </Box>
       );

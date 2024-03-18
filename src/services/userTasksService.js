@@ -79,3 +79,7 @@ export const filterUserTasks = (searchQuery, dateQuery, userTasks) => {
   export const sortUserTasksByLatestDueDates = (tasks) => {
     return [].slice.call(tasks).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)).reverse();
   }
+
+  export const sortCommentsByLatestDates = (comments) => {
+    return [].slice.call(comments).sort((a, b) => new Date(a.lastUpdatedDate) - new Date(b.lastUpdatedDate)).reverse();
+  }
