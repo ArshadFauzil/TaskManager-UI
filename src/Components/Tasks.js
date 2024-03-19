@@ -30,8 +30,9 @@ const Tasks = () => {
   const sortedUserTasks = sortUserTasksByLatestDueDates(filteredUserTasks);
 
   useEffect(() => {
-    if (taskListLoading && pageNumber < numberOfUserTasksPagesOnAppLoad) {
-      retrieveAllTasks(pageNumber)
+    if (taskListLoading) {
+      if (pageNumber <= numberOfUserTasksPagesOnAppLoad) {
+        retrieveAllTasks(pageNumber)
           .then(response => {
             if (response.data.length > 0) {
               dispatchToStore(tasksFetchedByPage(response.data));
@@ -40,10 +41,12 @@ const Tasks = () => {
           })
             .catch(error => {
             setGetApiErrorOccurred(true);
+            setTaskListLoading(false);
           });
-    } else {
-      setTaskListLoading(false);
-    }
+      } else {
+        setTaskListLoading(false);
+      }
+    } 
   }, [taskListLoading, pageNumber, numberOfUserTasksPagesOnAppLoad, dispatchToStore]);
 
   const handleOnScroll = (e) => {
